@@ -528,7 +528,8 @@ class nggManageGallery {
 
 	function render_gallery_link_to_page_field($gallery)
 	{
-		$pages = get_pages();
+		//$pages = get_pages(); //modified by Szilard
+		$pages = get_posts(array('post_type' => 'dv2_album', 'posts_per_page' => -1, 'post_status' => 'any'));
 		include('templates/manage_gallery/gallery_link_to_page_field.php');
 	}
 
@@ -543,7 +544,8 @@ class nggManageGallery {
 
 	function render_gallery_create_page_field($gallery)
 	{
-		$pages = get_pages();
+		//$pages = get_pages(); //modified by Szilard
+		$pages = get_posts(array('post_type' => 'dv2_album', 'posts_per_page' => -1, 'post_status' => 'any'));
 		include('templates/manage_gallery/gallery_create_page_field.php');
 	}
 
@@ -589,6 +591,35 @@ class nggManageGallery {
                             nggGallery::show_message(__('Gallery deleted successfully ', 'nggallery'));
 					}
 					break;
+					
+				//adde by Szilard - BEGIN
+				case 'scanfolder_gallery':
+				// Delete gallery
+					if ( is_array($_POST['doaction']) ) {
+						/**
+						if (isset ($_POST['scanfolder']))  {
+						// Rescan folder
+							check_admin_referer('ngg_updategallery');
+				
+							$gallerypath = $wpdb->get_var("SELECT path FROM $wpdb->nggallery WHERE gid = '$this->gid' ");
+							nggAdmin::import_gallery($gallerypath, $this->gid);
+						}
+						/**/
+                        $scanned = false;
+						$mapper = C_Gallery_Mapper::get_instance();
+						foreach ( $_POST['doaction'] as $id ) {
+							//$scanned = $mapper->destroy($id);
+							//$scanned = 'szilva';
+							$gallerypath = $wpdb->get_var("SELECT path FROM $wpdb->nggallery WHERE gid = '$id' ");
+							nggAdmin::import_gallery($gallerypath, $id, false); //don't create thumbs
+						}
+
+						//if($scanned)
+                        //    nggGallery::show_message(__('Gallery folder successfully scanned for new images', 'nggallery'));
+
+					}
+					break;
+				//adde by Szilard - END
 			}
 		}
 
@@ -841,12 +872,14 @@ class nggManageGallery {
 
             // Create a WP page
             global $user_ID;
+			
+			$page['post_excerpt']    = stripslashes($_POST['gallerydesc']); //added by Szilard
 
-            $page['post_type']    = 'page';
+            $page['post_type']    = 'dv2_album'; //'page'; //modified by Szilard
 	        $page['post_content'] = apply_filters('ngg_add_page_shortcode', '[nggallery id="' . $this->gid . '"]' );
             $page['post_parent']  = $parent_id;
             $page['post_author']  = $user_ID;
-            $page['post_status']  = 'publish';
+            $page['post_status']  = 'draft'; //'publish'; //modified by Szilard
             $page['post_title']   = $gallery_title == '' ? $gallery_name : $gallery_title;
             $page = apply_filters('ngg_add_new_page', $page, $this->gid);
 
@@ -856,6 +889,12 @@ class nggManageGallery {
                 $gallery->pageid = $gallery_pageid;
                 $mapper->save($gallery);
                 nggGallery::show_message(__('New gallery page ID', 'nggallery') . ' ' . $gallery_pageid . ' -> <strong>' . $gallery_title . '</strong> ' . __('created','nggallery'));
+				
+				update_post_meta($gallery_pageid, 'ecpt_galleryid', $this->gid); //added by Szilard
+				
+				$_POST['pageid'] = $gallery_pageid; //added by Szilard
+				//this hook was added by Szilard
+				do_action('ngg_update_gallery_only_featured_image', $this->gid, $_POST); //added by Szilard
             }
 
             do_action('ngg_gallery_addnewpage', $this->gid);

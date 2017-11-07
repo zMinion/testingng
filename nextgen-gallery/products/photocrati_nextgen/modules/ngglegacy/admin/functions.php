@@ -10,6 +10,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
  *
  * @access public
  */
+if ( !class_exists('nggAdmin') ) { //if added by Szilard
 class nggAdmin{
 
     /**
@@ -576,7 +577,8 @@ class nggAdmin{
      * @param string $galleryfolder contains relative path to the gallery itself
      * @return void
      */
-    static function import_gallery($galleryfolder, $gallery_id=NULL) {
+    //static function import_gallery($galleryfolder, $gallery_id=NULL) {
+	static function import_gallery($galleryfolder, $gallery_id=NULL, $create_thumbs = true) { //modified by Szilard
 
         global $wpdb, $user_ID;
 
@@ -664,6 +666,7 @@ class nggAdmin{
         nggAdmin::set_gallery_preview ( $gallery_id );
 
         // now create thumbnails
+		if ( $create_thumbs ) //IF added by Szilard
         nggAdmin::do_ajax_operation( 'create_thumbnail' , $image_ids, __('Create new thumbnails','nggallery') );
 
         //TODO:Message will not shown, because AJAX routine require more time, message should be passed to AJAX
@@ -798,8 +801,10 @@ class nggAdmin{
     }
 
 } // END class nggAdmin
+}
 
 // XXX temporary...used as a quick fix to refresh I_Settings_Manager when the nextgen option is updated manually in order to run Hooks etc.
+if ( !function_exists('ngg_refreshSavedSettings') ) { //if added by Szilard
 function ngg_refreshSavedSettings()
 {
     if (class_exists('C_NextGen_Settings')) {
@@ -823,4 +828,5 @@ function ngg_refreshSavedSettings()
     }
 
     return false;
+}
 }

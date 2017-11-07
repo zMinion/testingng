@@ -80,7 +80,7 @@ class C_NextGen_Shortcode_Manager
 		if ($this->_runlevel > 1 && defined('WP_DEBUG') && WP_DEBUG && !is_admin() && !$this->_has_warned)
 		{
 			$this->_has_warned = TRUE;
-			error_log('Sorry, but recursing filters on "the_content" breaks NextGEN Gallery. Please see https://core.trac.wordpress.org/ticket/17817 and NGG_DISABLE_FILTER_THE_CONTENT');
+			//error_log('Sorry, but recursing filters on "the_content" breaks NextGEN Gallery. Please see https://core.trac.wordpress.org/ticket/17817 and NGG_DISABLE_FILTER_THE_CONTENT'); //removed by Szilard
 		}
 
 		foreach (array_keys($this->_shortcodes) as $shortcode) {

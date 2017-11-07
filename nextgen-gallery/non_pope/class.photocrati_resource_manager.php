@@ -167,10 +167,10 @@ class C_Photocrati_Resource_Manager
 			if (defined('W3TC') && defined('WP_DEBUG') && WP_DEBUG && !is_admin()) {
 				if (!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE', TRUE);
 				if (!did_action('wp_footer')) {
-					error_log("We're sorry, but your theme's page template didn't make a call to wp_footer(), which is required by NextGEN Gallery. Please add this call to your page templates.");
+					//error_log("We're sorry, but your theme's page template didn't make a call to wp_footer(), which is required by NextGEN Gallery. Please add this call to your page templates."); //removed by Szilard
 				}
 				else {
-					error_log("We're sorry, but your theme's page template didn't make a call to wp_print_footer_scripts(), which is required by NextGEN Gallery. Please add this call to your page templates.");
+					//error_log("We're sorry, but your theme's page template didn't make a call to wp_print_footer_scripts(), which is required by NextGEN Gallery. Please add this call to your page templates."); //removed by Szilard
 				}
 			}
 
